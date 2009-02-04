@@ -23,30 +23,109 @@
 # You can contact me at the following email address:
 # philippe.chretien@gmail.com
 
-import time
 import Aspyct
 
-temperature = 0.0
+class Position:
+    x = 0
+    y = 0
+    
+position = Position()
+board = [[0,0,0],[0,1,0],[0,0,0]]
 
-def setTemperature(t):
-    global temperature
-    temperature = t
+def up():
+    global position
+    position.y = position.y - 1
     
-def adviceIn(cd):
-    global temperature
-    print "Temperature was %f" % temperature
+def down():
+    global position
+    position.y = position.y + 1
     
-def adviceOut(cd):
-    global temperature
-    print "Temperature changed to %f" % temperature
+def left():
+    global position
+    position.x = position.x - 1
     
-Aspyct.atCall(setTemperature, adviceIn)
-Aspyct.atReturn(setTemperature, adviceOut)
+def right():
+    global position
+    position.x = position.x + 1
+
+
+def callUp(cd):
+    global position, board    
+    if position.y == 0:
+        return True
+    
+def callDown(cd):
+    global position, board
+    if position.y == len(board)-1:
+        return True
+    
+def callLeft(cd):
+    global position, board
+    if position.x == 0:
+        return True
+    
+def callRight(cd):
+    global position, board
+    if position.x == len(board[0])-1:
+        return True
+    
+def returnMove(cd):
+    global position, board    
+    if board[position.y][position.x] == 1:
+        print "Boum!"
+        quit()
+    else:
+        print "Ouf :)"
+        
+def avoidMove(cd):
+    print "Invalid move!"
+    
+def exitMove(cd):
+    print "( %d, %d)" % (position.x, position.y)
+    print board
+             
+    
+Aspyct.atCall(up, callUp)
+Aspyct.atCall(down, callDown)
+Aspyct.atCall(left, callLeft)
+Aspyct.atCall(right, callRight)
+
+Aspyct.atReturn(up, returnMove)
+Aspyct.atReturn(down, returnMove)
+Aspyct.atReturn(left, returnMove)
+Aspyct.atReturn(right, returnMove)
+
+Aspyct.atAvoid(up, avoidMove)
+Aspyct.atAvoid(down, avoidMove)
+Aspyct.atAvoid(left, avoidMove)
+Aspyct.atAvoid(right, avoidMove)
+
+Aspyct.atExit(up, exitMove)
+Aspyct.atExit(down, exitMove)
+Aspyct.atExit(left, exitMove)
+Aspyct.atExit(right, exitMove)
 
 while True:
-    ret = raw_input("Enter new temperature (x to exit): ")
-    if ret == "x":
+    dir = raw_input("Where do you want to go today?  ")
+    dir = dir.strip().lower()
+    if dir == "exit":
         quit()
         
-    setTemperature(float(ret))
+    if dir == "help":
+        print "COMMAND   DESCRIPTION"
+        print "up        Move one tile up."
+        print "down      Move one tile down."
+        print "left      Move one tile left."
+        print "right     Move one tile right."
+        print "exit      Exit the program."
+        print "help      Display this help."
+        
+    if dir == "up":
+        up()
+    if dir == "down":
+        down()
+    if dir == "left":
+        left()
+    if dir == "right":
+        right()
         
